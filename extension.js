@@ -18,7 +18,7 @@
 
 /* exported init */
 
-const { Clutter, GObject, St } = imports.gi;
+const { Clutter, GObject, Shell, St } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -35,22 +35,34 @@ class Dotspaces extends PanelMenu.Button {
         this.add_child(this.dotsBox);
         this._active_workspace_changed = global.workspace_manager.connect('active-workspace-changed', this._update_dots.bind(this));
         this._workspace_number_changed = global.workspace_manager.connect('notify::n-workspaces', this._update_dots.bind(this));
+        this._windows_changed = Shell.WindowTracker.get_default().connect('tracked-windows-changed', this._update_dots.bind(this));
 
         // Connect input
-        this._workspace_scroll = this.connect('scroll-event', this._onScroll.bind(this));
+        this._workspace_scroll = this.connect('scroll-event', this._cycle_workspaces.bind(this));
     }
 
-    _destroy() {
+    /*
+     *
+     * Handle destroy.
+     *
+     */
+    destroy() {
         // Disconnect events
         if (this._ws_active_changed) global.workspace_manager.disconnect(this._ws_active_changed);
         if (this._workspace_number_changed) global.workspace_manager.disconnect(this._workspace_number_changed);
         if (this._workspace_scroll) this.disconnect(this._workspace_scroll);
+        if (this._windows_changed) Shell.WindowTracker.get_default().disconnect(this._windows_changed);
 
         // Destroy
         this.dotsBox.destroy();
         super.destroy();
     }
-    
+
+    /*
+     *
+     * Update the dot indicators.
+     *
+     */
     _update_dots() {
         // Destroy all dots
         this.dotsBox.destroy_all_children();
@@ -62,19 +74,16 @@ class Dotspaces extends PanelMenu.Button {
         // Draw all dots
         for (let i = 0; i < this.workspace_count; i++) {
             // Create the new workspace indicator
-            let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: true, track_hover: true });
+            let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: false, track_hover: false, style_class: "dotspaces-workspace" });
 
-            // Create and set the label
-            dotsCircle.label = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
-            dotsCircle.set_child(dotsCircle.label);
+            // Create and set the icon
+            dotsCircle.icon = new St.Icon({ icon_name: "radio-checked-symbolic", icon_size: 16 });
+            dotsCircle.set_child(dotsCircle.icon);
 
-            // Set text and connect input as necessary
-            if (this.active_workspace_index === i) {
-                dotsCircle.style_class = "dotspaces-workspace-active";
-                dotsCircle.label.set_text(' ● ');
-            } else {
-                dotsCircle.style_class = "dotspaces-workspace";
-                dotsCircle.label.set_text(' ○ ');
+            // Set icon and connect input as necessary
+            if (this.active_workspace_index !== i) {
+                dotsCircle.track_hover = true;
+                dotsCircle.icon.icon_name = global.workspace_manager.get_workspace_by_index(i).n_windows > 0 ? "radio-mixed-symbolic" : "radio-symbolic";
                 dotsCircle.connect('button-release-event', () => this._change_workspace(i));
             }
 
@@ -83,12 +92,23 @@ class Dotspaces extends PanelMenu.Button {
         }
     }
 
+    /*
+     *
+     * Change the workspace to the workspace of the specified index.
+     *
+     */
     _change_workspace(index) {
         global.workspace_manager.get_workspace_by_index(index).activate(global.get_current_time());
     }
 
-    _onScroll(actor, event) {
-        // Get the next index
+
+    /*
+     *
+     * Cycle through workspaces with the scrollwheel
+     *
+     */
+    _cycle_workspaces(_, event) {
+        // Increment or decrement the index
         let index = this.active_workspace_index;
         switch (event.get_scroll_direction()) {
             case Clutter.ScrollDirection.UP: index--; break;
@@ -117,7 +137,7 @@ class Extension {
     }
 
     disable() {
-        this._dotspaces._destroy();
+        this._dotspaces.destroy();
         this._dotspaces = null;
     }
 }
