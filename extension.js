@@ -83,7 +83,7 @@ class Dotspaces extends PanelMenu.Button {
             // Set icon and connect input as necessary
             if (this.active_workspace_index !== i) {
                 dotsCircle.track_hover = true;
-                dotsCircle.icon.icon_name = global.workspace_manager.get_workspace_by_index(i).n_windows > 0 ? "radio-mixed-symbolic" : "radio-symbolic";
+                dotsCircle.icon.icon_name = "radio-symbolic";
                 dotsCircle.connect('button-release-event', () => this._change_workspace(i));
             }
 
