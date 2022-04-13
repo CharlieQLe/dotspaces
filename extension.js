@@ -62,7 +62,7 @@ class Dotspaces extends PanelMenu.Button {
         // Draw all dots
         for (let i = 0; i < this.workspace_count; i++) {
             // Create the new workspace indicator
-            let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: true, track_hover: true, style_class: "dotspaces-dot" });
+            let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: true, track_hover: true });
 
             // Create and set the label
             dotsCircle.label = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
@@ -70,9 +70,10 @@ class Dotspaces extends PanelMenu.Button {
 
             // Set text and connect input as necessary
             if (this.active_workspace_index === i) {
-                dotsCircle.label.style_class = "dotspaces-active";
+                dotsCircle.style_class = "dotspaces-workspace-active";
                 dotsCircle.label.set_text(' ● ');
             } else {
+                dotsCircle.style_class = "dotspaces-workspace";
                 dotsCircle.label.set_text(' ○ ');
                 dotsCircle.connect('button-release-event', () => this._change_workspace(i));
             }
