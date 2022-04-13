@@ -1,0 +1,8 @@
+{
+  "name": "Dotspaces",
+  "description": "A simple workspace switcher",
+  "uuid": "dotspaces@charlieqle.github.com",
+  "shell-version": [
+    "42"
+  ]
+}
