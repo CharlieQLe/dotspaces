@@ -101,7 +101,6 @@ class Dotspaces extends PanelMenu.Button {
         global.workspace_manager.get_workspace_by_index(index).activate(global.get_current_time());
     }
 
-
     /*
      *
      * Cycle through workspaces with the scrollwheel
