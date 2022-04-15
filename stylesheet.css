@@ -1,5 +1,6 @@
-.dotspaces-workspace { margin-right: 8px; }
-
-.dotspaces-workspace:last-child { margin-right: 0px; }
+.dotspaces-workspace {
+  margin-left: 4px;
+  margin-right: 4px;
+}
 
 .dotspaces-workspace:hover { color: lightgray; }
