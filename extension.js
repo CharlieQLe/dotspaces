@@ -31,8 +31,9 @@ class Dotspaces extends PanelMenu.Button {
         this.track_hover = false;
 
         // Create the box to hold the dots 
-		this.dotsBox = new St.BoxLayout({});
+	this.dotsBox = new St.BoxLayout({});
         this.add_child(this.dotsBox);
+	this._update_dots();
         this._active_workspace_changed = global.workspace_manager.connect('active-workspace-changed', this._update_dots.bind(this));
         this._workspace_number_changed = global.workspace_manager.connect('notify::n-workspaces', this._update_dots.bind(this));
         this._windows_changed = Shell.WindowTracker.get_default().connect('tracked-windows-changed', this._update_dots.bind(this));
