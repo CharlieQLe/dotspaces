@@ -1,6 +1,11 @@
-.dotspaces-workspace {
+.dotspaces-indicator-active {
   margin-left: 4px;
   margin-right: 4px;
 }
 
-.dotspaces-workspace:hover { color: lightgray; }
+.dotspaces-indicator-inactive {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.dotspaces-indicator-inactive:hover { color: lightgray; }

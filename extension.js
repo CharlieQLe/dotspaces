@@ -17,7 +17,6 @@
  */
 
 /* exported init */
-
 const { Clutter, GObject, Shell, St } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -67,7 +66,7 @@ class Dotspaces extends PanelMenu.Button {
     _update_dots() {
         // Destroy all dots
         this.dotsBox.destroy_all_children();
-        
+
         // Update workspace information
         this.workspace_count = global.workspace_manager.get_n_workspaces();
         this.active_workspace_index = global.workspace_manager.get_active_workspace_index();
@@ -75,18 +74,19 @@ class Dotspaces extends PanelMenu.Button {
         // Draw all dots
         for (let i = 0; i < this.workspace_count; i++) {
             // Create the new workspace indicator
-            let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: false, track_hover: false, style_class: "dotspaces-workspace" });
-
-            // Create and set the icon
-            dotsCircle.icon = new St.Icon({ icon_name: "radio-checked-symbolic", icon_size: 16 });
-            dotsCircle.set_child(dotsCircle.icon);
+            let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: false, track_hover: false });
 
             // Set icon and connect input as necessary
-            if (this.active_workspace_index !== i) {
+            if (this.active_workspace_index === i) {
+                dotsCircle.icon = new St.Icon({ icon_name: "media-record-symbolic", icon_size: 16 });
+		dotsCircle.style_class = "dotspaces-indicator-active";
+	    } else {
                 dotsCircle.track_hover = true;
-                dotsCircle.icon.icon_name = "radio-symbolic";
+		dotsCircle.icon = new St.Icon({ icon_name: "radio-symbolic", icon_size: 14 });
+		dotsCircle.style_class = "dotspaces-indicator-inactive";
                 dotsCircle.connect('button-release-event', () => this._change_workspace(i));
             }
+	    dotsCircle.set_child(dotsCircle.icon);
 
             // Add actor
             this.dotsBox.add_actor(dotsCircle);
