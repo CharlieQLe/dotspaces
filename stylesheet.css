@@ -8,4 +8,14 @@
   margin-right: 5px;
 }
 
+.dotspaces-indicator-dynamic-active {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.dotspaces-indicator-dynamic-inactive {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
 .dotspaces-indicator-inactive:hover { color: lightgray; }

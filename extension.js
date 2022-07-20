@@ -17,6 +17,7 @@
  */
 
 /* exported init */
+
 const { Clutter, GObject, Shell, St } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -70,21 +71,32 @@ class Dotspaces extends PanelMenu.Button {
         this.active_workspace_index = global.workspace_manager.get_active_workspace_index();
 
         // Draw all dots
+        let finalIndex = this.workspace_count - 1;
         for (let i = 0; i < this.workspace_count; i++) {
             // Create the new workspace indicator
             let dotsCircle = new St.Bin({ visible: true, reactive: true, can_focus: false, track_hover: false });
 
             // Set icon and connect input as necessary
             if (this.active_workspace_index === i) {
-                dotsCircle.icon = new St.Icon({ icon_name: "media-record-symbolic", icon_size: 16 });
-		dotsCircle.style_class = "dotspaces-indicator-active";
-	    } else {
+                if (i === finalIndex) {
+                    dotsCircle.icon = new St.Icon({ icon_name: "list-add-symbolic", icon_size: 12 });
+                    dotsCircle.style_class = "dotspaces-indicator-dynamic-active";
+                } else {
+                    dotsCircle.icon = new St.Icon({ icon_name: "media-record-symbolic", icon_size: 16 });
+                    dotsCircle.style_class = "dotspaces-indicator-active";
+                }
+            } else {
                 dotsCircle.track_hover = true;
-		dotsCircle.icon = new St.Icon({ icon_name: "radio-symbolic", icon_size: 14 });
-		dotsCircle.style_class = "dotspaces-indicator-inactive";
+                if (i === finalIndex) {
+                    dotsCircle.icon = new St.Icon({ icon_name: "list-add-symbolic", icon_size: 8 });
+                    dotsCircle.style_class = "dotspaces-indicator-dynamic-inactive";
+                } else {
+                    dotsCircle.icon = new St.Icon({ icon_name: "radio-symbolic", icon_size: 14 });
+                    dotsCircle.style_class = "dotspaces-indicator-inactive";
+                }
                 dotsCircle.connect('button-release-event', () => this._change_workspace(i));
             }
-	    dotsCircle.set_child(dotsCircle.icon);
+	        dotsCircle.set_child(dotsCircle.icon);
 
             // Add actor
             this.dotsBox.add_actor(dotsCircle);
